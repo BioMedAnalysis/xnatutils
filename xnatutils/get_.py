@@ -33,7 +33,7 @@ def get(session, download_dir, scans=None, resource_name=None,
         convert_to=None, converter=None, subject_dirs=False,
         with_scans=None, without_scans=None, strip_name=False,
         skip_downloaded=False, before=None, after=None,
-        project_id=None, subject_id=None, match_scan_id=True, **kwargs):
+        project_id=None, subject_id=None, match_scan_id=True, bids=False, **kwargs):
     """
     Downloads datasets (e.g. scans) from XNAT.
 
@@ -147,6 +147,8 @@ def get(session, download_dir, scans=None, resource_name=None,
     use_netrc : bool
         Whether to load and save user credentials from netrc file
         located at $HOME/.netrc
+    bids : bool
+        Whether to output files in BIDS format with json sidecars
     """
     # Convert scan string to list of scan strings if only one provided
     if isinstance(scans, str):
@@ -204,7 +206,7 @@ def get(session, download_dir, scans=None, resource_name=None,
                 for resource in resources:
                     _download_resource(
                         resource, scan, session, download_dir, subject_dirs,
-                        convert_to, converter, strip_name, suffix=suffix)
+                        convert_to, converter, strip_name, suffix=suffix, bids=bids)
                     downloaded_resources[session.label].append(resource.uri)
     if not downloaded_resources:
         logger.warning(
@@ -221,7 +223,7 @@ def get(session, download_dir, scans=None, resource_name=None,
 
 
 def get_from_xml(xml_file_path, download_dir, convert_to=None, converter=None,
-                 subject_dirs=False, strip_name=False, **kwargs):
+                 subject_dirs=False, strip_name=False, bids=False **kwargs):
     """
     Downloads datasets (e.g. scans) from an XNAT instance based on a saved
     XML file downloaded from the XNAT UI
@@ -292,7 +294,7 @@ def get_from_xml(xml_file_path, download_dir, convert_to=None, converter=None,
                 scan = None
             _download_resource(
                 resource, scan, session, download_dir,
-                subject_dirs, convert_to, converter, strip_name)
+                subject_dirs, convert_to, converter, strip_name, bids=bids)
             downloaded.append(resource.uri)
     logger.info("Successfully downloaded %s resources", len(downloaded))
     return downloaded
@@ -659,7 +661,7 @@ def cmd(argv=sys.argv[1:]):
                          download_dir, convert_to=args.convert_to,
                          converter=args.converter, subject_dirs=args.subject_dirs,
                          user=args.user, strip_name=args.strip_name,
-                         server=args.server, use_netrc=(not args.no_netrc))
+                         server=args.server, use_netrc=(not args.no_netrc), bids=args.bids)
         else:
             get(args.session_or_regex_or_xml_file, download_dir, scans=args.scans,
                 resource_name=args.resource, with_scans=args.with_scans,
@@ -670,7 +672,7 @@ def cmd(argv=sys.argv[1:]):
                 match_scan_id=(not args.dont_match_scan_id),
                 skip_downloaded=args.skip_downloaded,
                 project_id=args.project, subject_id=args.subject,
-                before=args.before, after=args.after)
+                before=args.before, after=args.after, bids=args.bids)
     except XnatUtilsUsageError as e:
         print_usage_error(e)
     except XNATResponseError as e:
