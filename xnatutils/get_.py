@@ -339,7 +339,7 @@ def get_extension(resource_name):
 
 
 def _download_resource(resource, scan, session, download_dir, subject_dirs,
-                       convert_to, converter, strip_name, suffix=False):
+                       convert_to, converter, strip_name, suffix=False, bids=False):
     if scan is not None:
         scan_label = scan.id
         if scan.type is not None:
@@ -454,9 +454,10 @@ def _download_resource(resource, scan, session, download_dir, subject_dirs,
             # mrconvert can do this as well but there have been
             # some problems losing TR from the dicom header.
             zip_opt = 'y' if convert_to == 'nifti_gz' else 'n'
-            convert_cmd = '{} -z {} -o "{}" -f "{}" "{}"'.format(
+            convert_cmd = '{} -z {} -o "{}" -f "{}" {}"{}"'.format(
                 dcm2niix, zip_opt, target_dir,
                 (scan_label if scan is not None else resource.label),
+                '-b ' if bids else '',
                 src_path)
             sp.check_call(convert_cmd, shell=True)
         elif converter == 'mrtrix':
@@ -601,6 +602,11 @@ def parser():
                               "will be used for DICOM->NIFTI conversion and "
                               "mrconvert for other conversions".format(
                                   "', '".join(converter_choices))))
+    parser.add_argument('--bids', type=bool, default=False,
+                        help=(
+                            "Whether to output the files in BIDS format "
+                            "with json sidecards"))
+    
     parser.add_argument('--subject_dirs', '-d', action='store_true',
                         default=False, help=(
                             "Whether to organise sessions within subject "
