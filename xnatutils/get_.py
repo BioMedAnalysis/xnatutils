@@ -223,7 +223,7 @@ def get(session, download_dir, scans=None, resource_name=None,
 
 
 def get_from_xml(xml_file_path, download_dir, convert_to=None, converter=None,
-                 subject_dirs=False, strip_name=False, bids=False **kwargs):
+                 subject_dirs=False, strip_name=False, bids=False, **kwargs):
     """
     Downloads datasets (e.g. scans) from an XNAT instance based on a saved
     XML file downloaded from the XNAT UI
