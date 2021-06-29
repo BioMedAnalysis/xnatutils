@@ -459,7 +459,7 @@ def _download_resource(resource, scan, session, download_dir, subject_dirs,
             convert_cmd = '{} -z {} -o "{}" -f "{}" {}"{}"'.format(
                 dcm2niix, zip_opt, target_dir,
                 (scan_label if scan is not None else resource.label),
-                '-b ' if bids else '',
+                '-b y ' if bids else '',
                 src_path)
             sp.check_call(convert_cmd, shell=True)
         elif converter == 'mrtrix':
