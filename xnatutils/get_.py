@@ -185,7 +185,7 @@ def get(session, download_dir, scans=None, resource_name=None,
                             logger.warning(
                                 ("Did not find '%s' resource for %s:%s, "
                                  "skipping"),
-                                resource_name, session.label, scan_label)
+                                resource_name, session.label, scan.id)
                             continue
                     resources.append(resource)
                 else:
